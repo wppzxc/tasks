@@ -15,8 +15,9 @@
         <van-popup
                 v-model="showPasswordInput"
                 position="bottom"
-                :style="{ height: '60%' }">
-            <van-field v-model="updateInfo.oldPassword" type="password" label="旧密码 ："/>
+                :style="{ height: '50%' }">
+            <van-cell title="修改密码或支付宝" :border="false"/>
+            <van-field required v-model="updateInfo.oldPassword" type="password" label="旧密码 ："/>
             <van-field v-model="updateInfo.newPassword" type="password" label="新密码 ："/>
             <van-field v-model="updateInfo.checkPassword" type="password" label="确认密码 ："/>
             <van-field v-model="updateInfo.newAlipayAccount" label="新支付宝："/>
@@ -25,8 +26,9 @@
     </div>
 </template>
 <script>
-    import {mapState,mapActions} from 'vuex'
+    import {mapActions, mapState} from 'vuex'
     import {USERS} from '../../js/const/const'
+
     export default {
         data() {
             return {
@@ -50,7 +52,7 @@
             ...mapActions({
                 loginFunc: 'loginFunc'
             }),
-            changeAlipayAccount: function() {
+            changeAlipayAccount: function () {
                 if (this.checkPassword.length < 6) {
                     this.$toast("密码错误!")
                 } else {
@@ -61,7 +63,7 @@
             goBack: function () {
                 this.$router.go(-1)
             },
-            update:function () {
+            update: function () {
                 let that = this;
                 if (that.updateInfo.oldPassword.length === 0 || that.updateInfo.newPassword !== that.updateInfo.checkPassword) {
                     return that.$toast("密码为空或两次密码不一致!");
@@ -81,9 +83,16 @@
                     }
                     that.$axios.put(putUrl,
                         JSON.stringify(newUserInfo),
-                        {headers: {'Content-Type':'application/json'
-                        }}).then(function (resp) {
-                        that.loginFunc(resp.data)
+                        {headers: {'Content-Type': 'application/json'}}
+                        ).then(function (resp) {
+                        that.loginFunc(resp.data);
+                        that.showPasswordInput = false;
+                        that.updateInfo = {
+                            oldPassword: "",
+                            newPassword: "",
+                            checkPassword: "",
+                            newAlipayAccount: ""
+                        }
                     }).catch(function (err) {
                         that.$toast(err)
                     })

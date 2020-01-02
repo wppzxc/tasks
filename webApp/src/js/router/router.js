@@ -9,9 +9,9 @@ import CommitsInfo from '../../pages/commits/commitInfo'
 import CommitSubmit from '../../pages/commits/commitSubmit'
 import Settings from '../../pages/settings/settings'
 import UserInfo from '../../pages/settings/userInfo'
-import UpdateUserInfo from '../../pages/settings/updateUserInfo'
 import Service from '../../pages/settings/service'
 import UpdateServiceInfo from '../../pages/settings/updateService'
+import InviteInfo from '../../pages/settings/inviteInfo'
 
 const routers = [
     {path: '/', redirect: '/taskInfo'},
@@ -26,9 +26,9 @@ const routers = [
     {path: '/commitSubmit', name: "commitSubmit", component: CommitSubmit},
     {path: '/settings', name: "settings", component: Settings},
     {path: '/userInfo', name: "userInfo", component: UserInfo},
-    {path: '/updateUserInfo', name: "updateUserInfo", component: UpdateUserInfo},
     {path: '/service', name: "service", component: Service},
     {path: '/updateService', name: "updateService", component: UpdateServiceInfo},
+    {path: '/inviteInfo', name: "inviteInfo", component: InviteInfo},
 ];
 
 export default routers

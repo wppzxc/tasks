@@ -7,10 +7,8 @@
                   is-link to="/userInfo"/>
         <van-cell icon="flag-o"
                   title="我的邀请码"
-                  :value="this.user.name"
-                  clickable
-                  size="large"
-                  v-on:click="copy"/>
+                  value=" " size="large"
+                  is-link to="/inviteInfo"/>
         <van-field center disabled label="累积收益" left-icon="balance-o" v-model="this.user.balance">
             <van-button slot="button" size="small" type="danger" @click="showPasswordInput=true">提现</van-button>
         </van-field>
@@ -21,7 +19,11 @@
                   value=" " size="large"
                   is-link to="/service"/>
         <br/>
-        <van-button type="danger" round size="large" v-on:click="onLogout">切换用户</van-button>
+        <van-row>
+            <van-col offset="2" span="20">
+                <van-button type="danger" round size="large" v-on:click="onLogout">切换用户</van-button>
+            </van-col>
+        </van-row>
         <van-popup
                 v-model="showPasswordInput"
                 position="bottom"
@@ -91,7 +93,7 @@
                     this.$toast("提现成功")
                 }
                 this.showPasswordInput = false;
-            }
+            },
         }
     }
 </script>

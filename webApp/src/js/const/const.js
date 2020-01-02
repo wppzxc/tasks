@@ -1,8 +1,13 @@
 // prod
-const HOST = "http://212.64.87.242:8080/";
+const BACK_HOST = "http://212.64.87.242:8080/";
 // dev
-// const HOST = "http://127.0.0.1:8080/";
-const INVITE_URL = "http://212.64.87.242/register/";
-const USERS = HOST + "users/";
+// const BACK_HOST = "http://127.0.0.1:8080/";
+const USERS = BACK_HOST + "users/";
 
-export {INVITE_URL, HOST, USERS}
+// prod
+// const FRONT_HOST = "http://212.64.87.242/#/";
+// dev
+const FRONT_HOST = "http://212.64.87.242/#/";
+const INVITE_URL = FRONT_HOST + "register/";
+
+export {FRONT_HOST, INVITE_URL, BACK_HOST, USERS}

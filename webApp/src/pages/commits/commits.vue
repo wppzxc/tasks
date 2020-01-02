@@ -1,6 +1,6 @@
 <template>
     <div>
-        <van-nav-bar title="完成记录">
+        <van-nav-bar title="提交记录">
             <van-icon name="filter-o" slot="right" @click="showFilter=true"/>
         </van-nav-bar>
         <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
@@ -8,8 +8,7 @@
                     v-model="loading"
                     :finished="finished"
                     finished-text="没有更多了"
-                    @load="onLoad"
-            >
+                    @load="onLoad">
                 <van-panel
                         v-for="c in commits"
                         :key="c.id"
