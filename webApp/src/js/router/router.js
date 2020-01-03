@@ -11,7 +11,6 @@ import Settings from '../../pages/settings/settings'
 import UserInfo from '../../pages/settings/userInfo'
 import Service from '../../pages/settings/service'
 import UpdateServiceInfo from '../../pages/settings/updateService'
-import InviteInfo from '../../pages/settings/inviteInfo'
 
 const routers = [
     {path: '/', redirect: '/taskInfo'},
@@ -28,7 +27,6 @@ const routers = [
     {path: '/userInfo', name: "userInfo", component: UserInfo},
     {path: '/service', name: "service", component: Service},
     {path: '/updateService', name: "updateService", component: UpdateServiceInfo},
-    {path: '/inviteInfo', name: "inviteInfo", component: InviteInfo},
 ];
 
 export default routers

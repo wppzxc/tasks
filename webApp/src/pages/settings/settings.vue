@@ -8,7 +8,7 @@
         <van-cell icon="flag-o"
                   title="我的邀请码"
                   value=" " size="large"
-                  is-link to="/inviteInfo"/>
+                  is-link @click="showInvite"/>
         <van-field center disabled label="累积收益" left-icon="balance-o" v-model="this.user.balance">
             <van-button slot="button" size="small" type="danger" @click="showPasswordInput=true">提现</van-button>
         </van-field>
@@ -42,17 +42,29 @@
                     @close="withdrawals"
                     @blur="showPasswordInput = false"/>
         </van-popup>
+        <van-popup v-model="showQrCode">
+            <van-image
+                    width="1100"
+                    height="1750"
+                    :src="require('../../assets/img/invite.jpg')"
+                    v-on:click="showQrCode = false"/>
+            <div id="qrcode">123456</div>
+        </van-popup>
     </div>
 </template>
 
 <script>
     import {mapActions, mapState} from 'vuex'
     import {INVITE_URL} from '../../js/const/const'
+    import  QRCode from 'qrcodejs2'
     export default {
         data() {
             return {
                 showPasswordInput: false,
+                genQrCode: true,
+                showQrCode: false,
                 checkPassword: "",
+                inviteURL: "",
             }
         },
         computed: {
@@ -64,6 +76,28 @@
             ...mapActions({
                 logoutFunc: 'logoutFunc'
             }),
+            showInvite: function () {
+                let that = this;
+                that.showQrCode = true;
+                if (that.genQrCode) {
+                    setTimeout(function () {
+                        that.inviteURL = INVITE_URL + that.user.name;
+                        that.qrcode();
+                        that.genQrCode = false;
+                    },100);
+                }
+            },
+            qrcode: function () {
+                let that = this;
+                let qrcode = new QRCode('qrcode', {
+                    width: 100,
+                    height: 100, // 高度
+                    text: that.inviteURL // 二维码内容
+                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
+                    // background: '#f0f'
+                    // foreground: '#ff0'
+                });
+            },
             copy: function () {
                 let that = this;
                 let url = INVITE_URL + that.user.name;
@@ -80,13 +114,13 @@
                 this.$toast("退出成功！");
                 this.$router.push("/login")
             },
-            onInput: function(key) {
+            onInput: function (key) {
                 this.checkPassword = (this.checkPassword + key).slice(0, 6);
             },
-            onDelete: function() {
+            onDelete: function () {
                 this.checkPassword = this.checkPassword.slice(0, this.checkPassword.length - 1);
             },
-            withdrawals:function () {
+            withdrawals: function () {
                 if (this.checkPassword.length < 6) {
                     this.$toast("密码错误!")
                 } else {
@@ -97,3 +131,12 @@
         }
     }
 </script>
+<style>
+    #qrcode > img {
+        z-index: 3003;
+        position: absolute;
+        height: 25rem;
+        margin-top: -50%;
+        margin-left: 30%;
+    }
+</style>
