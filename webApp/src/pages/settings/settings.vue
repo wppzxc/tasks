@@ -46,17 +46,21 @@
             <van-image
                     width="1100"
                     height="1750"
-                    :src="require('../../assets/img/invite.jpg')"
+                    :src="final_img"
                     v-on:click="showQrCode = false"/>
             <div id="qrcode">123456</div>
         </van-popup>
+        <img :src="final_img" class="result-img" v-show="false">
+        <div class="result-img" v-show="false">
+            <canvas id="my_canvas" width="1100" height="1750"></canvas>
+        </div>
     </div>
 </template>
 
 <script>
     import {mapActions, mapState} from 'vuex'
     import {INVITE_URL} from '../../js/const/const'
-    import  QRCode from 'qrcodejs2'
+    import  QRCode from 'qrcode'
     export default {
         data() {
             return {
@@ -65,12 +69,33 @@
                 showQrCode: false,
                 checkPassword: "",
                 inviteURL: "",
+                final_img: "",
             }
         },
         computed: {
             ...mapState({
                 user: state => state.user
             })
+        },
+        mounted() {
+            let that = this;
+            QRCode.toDataURL(INVITE_URL + that.user.name).then(function (url) {
+                that.inviteURL = INVITE_URL + that.user.name;
+                let canvas = document.getElementById('my_canvas');
+                let ctx = canvas.getContext('2d');
+                let img1 = new Image();
+                let img2 = new Image();
+                // 处理跨域
+                img1.crossOrigin = 'anonymous';
+                img2.crossOrigin = 'anonymous';
+                img1.src = require('../../assets/img/invite.jpg'); // 背景图路经
+                img2.src = url; // 生成的二维码base64
+                img1.onload = function () {
+                    ctx.drawImage(img1, 0, 0, 1100, 1750); // 背景图载入画板
+                    ctx.drawImage(img2, 350, 1210, 400, 410);
+                    that.final_img = canvas.toDataURL('image/jpeg', 0.5)
+                }
+            });
         },
         methods: {
             ...mapActions({
@@ -86,26 +111,6 @@
                         that.genQrCode = false;
                     },100);
                 }
-            },
-            qrcode: function () {
-                let that = this;
-                let qrcode = new QRCode('qrcode', {
-                    width: 100,
-                    height: 100, // 高度
-                    text: that.inviteURL // 二维码内容
-                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
-                    // background: '#f0f'
-                    // foreground: '#ff0'
-                });
-            },
-            copy: function () {
-                let that = this;
-                let url = INVITE_URL + that.user.name;
-                that.$copyText(url).then(function (e) {
-                    that.$toast("已复制邀请链接，去邀请吧");
-                }, function (e) {
-                    that.$toast("无法获取邀请链接！");
-                })
             },
             onLogout: function () {
                 sessionStorage.clear();
