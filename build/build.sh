@@ -1,0 +1,1 @@
+docker run --rm  -e GO111MODULE=off -v $PWD:/go/src/github.com/wppzxc/tasks golang:1.13.4 go build --ldflags '-w -X github.com/wppzxc/tasks/src/pkg/version.version='$version'' -o /go/src/github.com/wppzxc/tasks/build/docker/tasks /go/src/github.com/wppzxc/tasks/src/main.go

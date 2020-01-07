@@ -171,6 +171,9 @@
                     that.taskInfo.commentImages = JSON.stringify(resp.data.slice(that.tmpGuideImages.length));
                     that.taskInfo.steps = JSON.stringify(that.tmpSteps);
                     console.log(that.taskInfo);
+                    that.taskInfo.bonus = Number(that.taskInfo.bonus);
+                    that.taskInfo.parentBonus = Number(that.taskInfo.parentBonus);
+                    that.taskInfo.grandParentBonus = Number(that.taskInfo.grandParentBonus);
                     that.$axios.put(BACK_HOST + that.user.name + TASKS, that.taskInfo).then((resp)=>{
                         console.log(resp);
                         that.goBack()

@@ -15,6 +15,7 @@ import (
 
 const (
 	fileServer     = "http://212.64.87.242"
+	serverPath     = "/static/"
 	staticFilePath = "/data/static/"
 	imgJPEG        = ".jpeg"
 	imgJPG         = ".jpg"
@@ -85,8 +86,9 @@ func UploadFiles(ctx echo.Context) error {
 		defer data.Close()
 
 		now := strconv.FormatInt(time.Now().UnixNano(), 10)
-		filename := staticFilePath + username + "-" + now + ext
-		saveFile, err := os.Create(filename)
+		filename := username + "-" + now + ext
+		savePath := staticFilePath + filename
+		saveFile, err := os.Create(savePath)
 		if err != nil {
 			return ""
 		}
@@ -95,8 +97,8 @@ func UploadFiles(ctx echo.Context) error {
 		if _, err := io.Copy(saveFile, data); err != nil {
 			return ""
 		}
-		fmt.Println("save img : ", filename)
-		return  fileServer + filename
+		fmt.Println("save img : ", savePath)
+		return fileServer + serverPath + filename
 	}
 
 	var result []string
@@ -109,8 +111,8 @@ func UploadFiles(ctx echo.Context) error {
 
 func getFileList(ctx echo.Context) []*multipart.FileHeader {
 	var result []*multipart.FileHeader
-	for i := 0; i<10; i++ {
- 		index := "img" + strconv.Itoa(i)
+	for i := 0; i < 10; i++ {
+		index := "img" + strconv.Itoa(i)
 		file, err := ctx.FormFile(index)
 		if err != nil {
 			break
