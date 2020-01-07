@@ -73,39 +73,6 @@
                     that.finished = false
                 }, 1000);
             },
-            onLoad: function () {
-                let that = this;
-                setTimeout(function () {
-                    for (let i = 0; i < 20; i++) {
-                        that.tasks.push({
-                            id: i,
-                            title: "第 " + i + " 个任务",
-                            description: "参与饿了么评论，领取奖励",
-                            number: 100,
-                            longContent: "你要这样这样这样做，再那样那样那样做，最后再这样这样这样做，就可以了",
-                            status: "进行中",
-                            images: [{
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            }]
-                        })
-                    }
-                    sessionStorage.setItem("tasks", JSON.stringify(that.tasks));
-                    that.loading = false;
-                    if (that.tasks.length >= 100) {
-                        that.finished = true
-                    }
-                }, 1000);
-            },
             showTaskInfo: function (task) {
                 this.$router.push({
                     name: 'taskInfo',

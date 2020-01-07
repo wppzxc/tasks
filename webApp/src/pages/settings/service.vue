@@ -18,25 +18,49 @@
                         width="30rem"
                         height="40rem"
                         fit="contain"
-                        :src="serviceImageUrl"
+                        :src="serviceInfo.serviceQrCode"
                 />
             </van-col>
         </van-row>
     </div>
 </template>
 <script>
+    import {BACK_HOST, SERVICE_INFO} from "../../js/const/const";
+    import {mapState} from 'vuex'
     export default {
         data() {
             return {
-                serviceImageUrl: "https://gss0.bdstatic.com/94o3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=fa9140accd95d143ce7bec711299e967/2934349b033b5bb571dc8c5133d3d539b600bc12.jpg"
+                serviceInfo: {
+                    serviceQrCode: "",
+                    servicePhone: "",
+                    serviceWechat: ""
+                }
             }
+        },
+        computed: {
+            ...mapState({
+                user: state => state.user
+            })
+        },
+        mounted() {
+            let that = this;
+            that.$axios.get(BACK_HOST + that.user.name + SERVICE_INFO).then((resp)=>{
+                that.serviceInfo = resp.data
+            }).catch((err)=>{
+                that.$toast(err)
+            })
         },
         methods: {
             goBack: function () {
                 this.$router.go(-1)
             },
             showUpdateService: function () {
-                this.$router.push("/updateService")
+                this.$router.push({
+                    name: 'updateService',
+                    params: {
+                        serviceInfo: this.serviceInfo
+                    },
+                })
             }
         }
     }

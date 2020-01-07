@@ -3,7 +3,8 @@
         <van-nav-bar title="任务详情">
             <van-icon name="edit" slot="right" v-on:click="showEditTask"/>
         </van-nav-bar>
-        <van-panel :title="taskInfo.title" :desc="taskInfo.expire" :status="taskInfo.status">
+        <van-panel :title="taskInfo.title" :desc="taskInfo.expire | transTime" :status="taskInfo.status">
+            <van-cell title="任务赏金：￥" :value="taskInfo.bonus | transMoney"/>
             <div>
                 <van-cell title="任务须知"/>
                 <van-field
@@ -11,23 +12,23 @@
                         type="textarea"
                         disabled
                         autosize
-                        v-for="(s, key) in steps"
+                        v-for="(s, key) in tmpSteps"
                         :key="key"
                         :value="s"/>
             </div>
             <div>
                 <van-cell title="详细步骤"/>
                 <van-grid :column-num="3">
-                    <van-grid-item v-for="(image, key) in taskInfo.guideImages" :key="key">
-                        <van-image :src="image" @click="showImages(taskInfo.guideImages, key)"/>
+                    <van-grid-item v-for="(image, key) in tmpGuideImages" :key="key">
+                        <van-image :src="image" @click="showImages(tmpGuideImages, key)"/>
                     </van-grid-item>
                 </van-grid>
             </div>
             <div>
                 <van-cell title="任务内容"/>
                 <van-grid :column-num="3">
-                    <van-grid-item v-for="(image, key) in taskInfo.commentImages" :key="key">
-                        <van-image :src="image" @click="showImages(taskInfo.commentImages, key)"/>
+                    <van-grid-item v-for="(image, key) in tmpCommentImages" :key="key">
+                        <van-image :src="image" @click="showImages(tmpCommentImages, key)"/>
                     </van-grid-item>
                 </van-grid>
                 <van-field label="评论内容："
@@ -35,11 +36,18 @@
                            disabled
                            type="textarea"
                            autosize
-                           v-model="currentCommit.comment"/>
+                           v-model="currentCommit.commentKey"/>
             </div>
             <van-row>
-                <van-col offset="2" span="20">
-                    <van-button type="primary" round size="large">开始</van-button>
+                <van-col offset="1" span="10">
+                    <van-button type="primary" :disabled="hasStarted(currentCommit.status)" round size="large"
+                                @click="startTask">开始
+                    </van-button>
+                </van-col>
+                <van-col offset="2" span="10">
+                    <van-button type="primary" :disabled="!hasStarted(currentCommit.status)" round size="large"
+                                @click="goSubmitCommit">提交
+                    </van-button>
                 </van-col>
             </van-row>
         </van-panel>
@@ -47,57 +55,46 @@
 </template>
 <script>
     import {ImagePreview} from 'vant'
+    import {BACK_HOST, COMMITS, TASKS} from '../../js/const/const'
+    import {commitStatus} from '../../js/const/status'
     export default {
         data() {
             return {
-                comment: "开始任务后才能查看评论内容哦~",
-                taskInfo: {
-                    title: "评价有礼",
-                    status: "进行中",
-                    expire: "2020/1/30",
-                    description: "1、打开饿了么，点击订单-找到等待评价的订单\n2、返回本页，复制评价，bao保存图片\n3、给商家骑手打好评，在评价里写网页li里的评价，上传网页里的图片，点击提交评价\n4、到商家页面，点击评价，点击最新，截图，回到网页上传，等待客服审核。任务审核完成，佣金直接到你的支付宝钱包",
-                    guideImages: [
-                        'https://img.yzcdn.cn/vant/apple-1.jpg',
-                        'https://img.yzcdn.cn/vant/apple-2.jpg',
-                        'https://img.yzcdn.cn/vant/apple-3.jpg',
-                        'https://img.yzcdn.cn/vant/apple-4.jpg',
-                        'https://img.yzcdn.cn/vant/apple-4.jpg',
-                    ],
-                    commentImages: [
-                        "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                        "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                        "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                    ],
-                    commentBase: "",
-                },
+                taskInfo: {},
+                tmpGuideImages: [],
+                tmpCommentImages: [],
+                tmpSteps: [],
                 currentCommit: {
-                    comment: ""
+                    ID: 0,
+                    commentKey: "",
+                    commitImage: "",
+                    status: "",
                 },
-                steps: ["1、打开饿了么，点击订单-找到等待评价的订单",
-                    "2、返回本页，复制评价，bao保存图片",
-                    "3、给商家骑手打好评，在评价里写网页li里的评价，上传网页里的图片，点击提交评价",
-                    "4、到商家页面，点击评价，点击最新，截图，回到网页上传，等待客服审核。任务审核完成，佣金直接到你的支付宝钱包"],
             }
         },
         mounted() {
-            this.task = this.$route.params.task
+            this.task = this.$route.params.task;
+            let that = this;
+            let username = localStorage.getItem("username");
+            that.$axios.get(BACK_HOST + username + TASKS).then((resp) => {
+                that.taskInfo = resp.data;
+                that.tmpGuideImages = JSON.parse(that.taskInfo.guideImages);
+                that.tmpCommentImages = JSON.parse(that.taskInfo.commentImages);
+                that.tmpSteps = JSON.parse(that.taskInfo.steps);
+                that.$axios.get(BACK_HOST + username + "/" + that.taskInfo.ID + COMMITS).then((resp) => {
+                    let currentCommit = resp.data;
+                    if (currentCommit.status === commitStatus.commitStatusStart) {
+                        that.currentCommit = currentCommit
+                    }
+                }).catch((err) => {
+                    that.$toast(err)
+                })
+            }).catch((err) => {
+                that.$toast(err)
+            })
         },
         methods: {
-            onStart: function () {
-                let that = this;
-                setTimeout(function () {
-                    that.comment = "这件商品真是好啊！233"
-                }, 1000)
-            },
-            onCommit: function () {
-                this.$router.push({
-                    name: "taskCommit",
-                    params: {
-                        task: this.task
-                    },
-                })
-            },
-            showImages: function(images, index) {
+            showImages: function (images, index) {
                 ImagePreview({
                     images: images,
                     startPosition: index,
@@ -108,8 +105,45 @@
             },
             showEditTask: function () {
                 this.$router.push('/editTask')
+            },
+            startTask: function () {
+                let that = this;
+                let username = localStorage.getItem("username");
+                that.$axios.post(BACK_HOST + username + "/" + that.taskInfo.ID + COMMITS).then((resp) => {
+                    console.log(resp.data);
+                    that.currentCommit = resp.data
+                }).catch((err) => {
+                    that.$toast(err)
+                })
+            },
+            hasStarted: function (status) {
+                return status === commitStatus.commitStatusStart;
+            },
+            goSubmitCommit: function () {
+                let that = this;
+                that.$router.push({
+                    name: 'commitSubmit',
+                    params: {
+                        commit: that.currentCommit
+                    },
+                })
             }
-        }
+        },
+        filters: {
+            transTime: function (timestamp) {
+                let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+                let Y = date.getFullYear() + '-';
+                let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+                let D = date.getDate() + ' ';
+                let h = date.getHours() + ':';
+                let m = date.getMinutes() + ':';
+                let s = date.getSeconds();
+                return Y + M + D + h + m + s;
+            },
+            transMoney: function (money) {
+                return (money/100).toFixed(2)
+            }
+        },
     }
 </script>
 <style>

@@ -38,7 +38,6 @@
                     return that.generateUser("test");
                 }
                 that.$axios.get(USERS + username).then(function (resp) {
-                    console.log(resp.data);
                     that.loginFunc(resp.data);
                 }).catch(function (err) {
                     console.log(err);

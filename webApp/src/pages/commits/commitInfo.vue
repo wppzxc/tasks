@@ -1,60 +1,98 @@
 <template>
     <div>
         <van-nav-bar
-                title="任务详情"
+                title="提交详情"
                 left-text="返回"
                 left-arrow
                 @click-left="goBack"/>
         <van-row>
             <van-col span="22" offset="1">
-                <van-panel :title="task.title" :desc="task.description" :status="task.status">
-                    <div v-text="task.longContent"></div>
+                <van-panel :title="commit.title" :desc="commit.description" :status="commit.status">
+                    <div v-text="commit.longContent"></div>
                 </van-panel>
             </van-col>
         </van-row>
         <van-row>
-            <van-col span="8"
-                     v-for="i in task.images">
+            <van-col span="22">
                 <van-image
                         width="100"
                         height="100"
                         fit="contain"
-                        :src="i.url"
-                />
+                        :src="commit.commitImage"
+                        @click="showImage([commit.commitImage])"/>
             </van-col>
         </van-row>
         <van-row>
-            <h3>{{comment}}</h3>
+            <van-field label="评论内容："
+                       disabled
+                       type="textarea"
+                       autosize
+                       v-model="commit.commentKey"/>
         </van-row>
         <van-row>
-            <van-cell-group title=" ">
-                <van-button type="info" v-on:click="onSubmit">完成</van-button>
-            </van-cell-group>
+            <van-col offset="1" span="10">
+                <van-button type="primary" :disabled="!hasStarted(commit.status)" round size="large"
+                            @click="passCommit">通过
+                </van-button>
+            </van-col>
+            <van-col offset="2" span="10">
+                <van-button type="danger" :disabled="!hasStarted(commit.status)" round size="large"
+                            @click="refuseCommit">拒绝
+                </van-button>
+            </van-col>
         </van-row>
     </div>
 </template>
 <script>
+    import {ImagePreview} from 'vant'
+    import {BACK_HOST, COMMITS} from '../../js/const/const'
+    import {commitStatus} from "../../js/const/status";
+    import {mapState} from 'vuex'
     export default {
         data() {
             return {
-                comment: "开始任务后才能查看评论内容哦~",
-                task: {}
+                commit: {}
             }
         },
+        computed: {
+            ...mapState({
+                user: state => state.user
+            })
+        },
         mounted() {
-            this.task = this.$route.params.task
+            this.commit = this.$route.params.commit
         },
         methods: {
-            onSubmit: function () {
-                this.$router.push({
-                    name: "commitSubmit",
-                    params: {
-                        task: this.task
-                    },
-                })
+            showImage: function(imgs) {
+                ImagePreview({
+                    images: imgs,
+                });
             },
             goBack: function () {
                 this.$router.go(-1)
+            },
+            hasStarted: function (status) {
+                return status === commitStatus.commitStatusCommit;
+            },
+            passCommit: function () {
+                this.updateCommitStatus(commitStatus.commitStatusDone)
+            },
+            refuseCommit: function () {
+                this.updateCommitStatus(commitStatus.commitStatusRefuse)
+            },
+            updateCommitStatus: function (state) {
+                let that = this;
+                let commit = {
+                    ID: that.commit.ID,
+                    status: state
+                };
+                let url = BACK_HOST + that.user.name + "/" + that.commit.taskID + COMMITS + "?resolve=" + state;
+                that.$axios.put(url, JSON.stringify(commit), {headers: {'Content-Type': 'application/json'}}).then((resp)=>{
+                    console.log(resp.data);
+                    that.goBack()
+                }).catch((err)=>{
+                    that.$toast(err)
+                })
             }
         }
     }

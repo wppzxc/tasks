@@ -4,16 +4,12 @@
             <van-icon name="filter-o" slot="right" @click="showFilter=true"/>
         </van-nav-bar>
         <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
-            <van-list
-                    v-model="loading"
-                    :finished="finished"
-                    finished-text="没有更多了"
-                    @load="onLoad">
+            <van-list>
                 <van-panel
                         v-for="c in commits"
-                        :key="c.id"
-                        :title="c.title"
-                        :desc="c.description"
+                        :key="c.ID"
+                        :title="c.taskTitle"
+                        :desc="c.CreatedAt | transTime"
                         :status="c.status"
                         v-on:click="showCommitInfo(c)"/>
             </van-list>
@@ -21,103 +17,58 @@
         <van-popup
                 v-model="showFilter"
                 position="bottom"
-                :style="{ height: '30%' }">
+                :style="{ height: '40%' }">
             <van-picker show-toolbar title="请选择"
                         :columns="commitStatus"
                         @cancel="showFilter=false"
-                        @confirm="onConfirm" />
+                        @confirm="onConfirm"/>
         </van-popup>
     </div>
 </template>
 <script>
+    import {BACK_HOST, COMMITS} from '../../js/const/const'
+    import {mapState} from 'vuex'
+    import {commitStatus} from "../../js/const/status";
+
     export default {
         data() {
             return {
-                loading: false,
                 isLoading: false,
                 finished: false,
                 showFilter: false,
-                commitStatus: ["全部","进行中","通过","不通过"],
+                commitStatus: ["全部", "进行中", "已提交", "已通过", "被拒绝"],
                 commits: []
             }
         },
-        beforeMount() {
-            let cacheCommits = sessionStorage.getItem("commits");
-            if (cacheCommits !== null) {
-                this.commits = JSON.parse(cacheCommits);
-            }
+        computed: {
+            ...mapState({
+                user: state => state.user
+            })
+        },
+        mounted() {
+            this.getData();
         },
         methods: {
             onRefresh: function () {
                 let that = this;
-                setTimeout(function () {
-                    sessionStorage.setItem("commits", "");
-                    let newCommits = [];
-                    for (let i = 0; i < 20; i++) {
-                        newCommits.push({
-                            id: i,
-                            title: "第 " + i + " 个任务",
-                            description: "参与饿了么评论，领取奖励",
-                            number: 100,
-                            longContent: "你要这样这样这样做，再那样那样那样做，最后再这样这样这样做，就可以了",
-                            status: "进行中",
-                            images: [{
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            },{
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            }]
-                        })
-                    }
-                    that.commits = newCommits;
-                    sessionStorage.setItem("commits", JSON.stringify(newCommits));
-                    that.$toast("success");
-                    that.isLoading = false;
-                    that.finished = false
-                }, 1000);
+                that.getData();
+                that.isLoading = false
             },
-            onLoad: function () {
+            getData: function (state) {
                 let that = this;
-                setTimeout(function () {
-                    for (let i = 0; i < 20; i++) {
-                        that.commits.push({
-                            id: i,
-                            title: "第 " + i + " 个任务",
-                            description: "参与饿了么评论，领取奖励",
-                            number: 100,
-                            longContent: "你要这样这样这样做，再那样那样那样做，最后再这样这样这样做，就可以了",
-                            status: "进行中",
-                            images: [{
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            },{
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/t-thirt.jpg",
-                            }, {
-                                url: "https://img.yzcdn.cn/vant/cat.jpeg",
-                            }]
-                        })
-                    }
-                    sessionStorage.setItem("commits", JSON.stringify(that.commits));
-                    that.loading = false;
-                    if (that.commits.length >= 100) {
-                        that.finished = true
-                    }
-                }, 1000);
+                let url = BACK_HOST + that.user.name + COMMITS;
+                if ( state !== undefined && state !== "全部") {
+                    url = url + "?state=" + state
+                }
+                that.$axios.get(url).then((resp) => {
+                    console.log(resp.data);
+                    that.commits = resp.data
+                }).catch((err) => {
+                    that.$toast(err)
+                })
             },
-            onConfirm: function(val, index) {
-                this.$toast("已筛选：" + val);
+            onConfirm: function (val, index) {
+                this.getData(val);
                 this.showFilter = false
             },
             showCommitInfo: function (commit) {
@@ -128,6 +79,18 @@
                     },
                 })
             }
-        }
+        },
+        filters: {
+            transTime: function (timestamp) {
+                let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+                let Y = date.getFullYear() + '-';
+                let M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+                let D = date.getDate() + ' ';
+                let h = date.getHours() + ':';
+                let m = date.getMinutes() + ':';
+                let s = date.getSeconds();
+                return Y + M + D + h + m + s;
+            },
+        },
     }
 </script>

@@ -9,7 +9,7 @@
                   title="我的邀请码"
                   value=" " size="large"
                   is-link @click="showInvite"/>
-        <van-field center disabled label="累积收益" left-icon="balance-o" v-model="this.user.balance">
+        <van-field center disabled label="累积收益" left-icon="balance-o" :value="this.user.balance | transMoney">
             <van-button slot="button" size="small" type="danger" @click="showPasswordInput=true">提现</van-button>
         </van-field>
         <van-cell icon="user-o" title="一级用户" :value="this.user.subUsers" size="large"/>
@@ -43,12 +43,13 @@
                     @blur="showPasswordInput = false"/>
         </van-popup>
         <van-popup v-model="showQrCode">
+<!--            width="360"-->
+<!--            height="640"-->
             <van-image
-                    width="1100"
+                    width="1000"
                     height="1750"
                     :src="final_img"
                     v-on:click="showQrCode = false"/>
-            <div id="qrcode">123456</div>
         </van-popup>
         <img :src="final_img" class="result-img" v-show="false">
         <div class="result-img" v-show="false">
@@ -91,8 +92,8 @@
                 img1.src = require('../../assets/img/invite.jpg'); // 背景图路经
                 img2.src = url; // 生成的二维码base64
                 img1.onload = function () {
-                    ctx.drawImage(img1, 0, 0, 1100, 1750); // 背景图载入画板
-                    ctx.drawImage(img2, 350, 1210, 400, 410);
+                    ctx.drawImage(img1, -70, 0, 1250, 1750); // 背景图载入画板
+                    ctx.drawImage(img2, 330, 1210, 440, 420);
                     that.final_img = canvas.toDataURL('image/jpeg', 0.5)
                 }
             });
@@ -107,7 +108,6 @@
                 if (that.genQrCode) {
                     setTimeout(function () {
                         that.inviteURL = INVITE_URL + that.user.name;
-                        that.qrcode();
                         that.genQrCode = false;
                     },100);
                 }
@@ -133,7 +133,12 @@
                 }
                 this.showPasswordInput = false;
             },
-        }
+        },
+        filters: {
+            transMoney: function (money) {
+                return (money/100).toFixed(2)
+            }
+        },
     }
 </script>
 <style>
