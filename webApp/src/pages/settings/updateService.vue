@@ -56,7 +56,7 @@
                     that.$axios.put(BACK_HOST + that.user.name + SERVICE_INFO, that.serviceInfo).then((resp)=>{
                         that.goBack()
                     }).catch((err)=>{
-                        that.$toast(err)
+                        console.log(err)
                     })
                 })
             },

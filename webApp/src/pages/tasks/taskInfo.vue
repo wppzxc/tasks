@@ -1,7 +1,7 @@
 <template>
     <div>
         <van-nav-bar title="任务详情">
-            <van-icon name="edit" slot="right" v-on:click="showEditTask"/>
+            <van-icon v-if="checkAdmin" name="edit" slot="right" v-on:click="showEditTask"/>
         </van-nav-bar>
         <van-panel :title="taskInfo.title" :desc="taskInfo.expire | transTime" :status="taskInfo.status">
             <van-cell title="任务赏金：￥" :value="taskInfo.bonus | transMoney"/>
@@ -57,6 +57,8 @@
     import {ImagePreview} from 'vant'
     import {BACK_HOST, COMMITS, TASKS} from '../../js/const/const'
     import {commitStatus} from '../../js/const/status'
+    import {mapState} from 'vuex'
+    import {ADMIN} from "../../js/const/admin";
     export default {
         data() {
             return {
@@ -70,6 +72,14 @@
                     commitImage: "",
                     status: "",
                 },
+            }
+        },
+        computed: {
+            ...mapState({
+                user: state => state.user
+            }),
+            checkAdmin: function () {
+                return this.user.name === ADMIN
             }
         },
         mounted() {
@@ -87,10 +97,10 @@
                         that.currentCommit = currentCommit
                     }
                 }).catch((err) => {
-                    that.$toast(err)
+                    console.log(err)
                 })
             }).catch((err) => {
-                that.$toast(err)
+                console.log(err)
             })
         },
         methods: {
@@ -113,7 +123,7 @@
                     console.log(resp.data);
                     that.currentCommit = resp.data
                 }).catch((err) => {
-                    that.$toast(err)
+                    console.log(err)
                 })
             },
             hasStarted: function (status) {
@@ -127,7 +137,7 @@
                         commit: that.currentCommit
                     },
                 })
-            }
+            },
         },
         filters: {
             transTime: function (timestamp) {

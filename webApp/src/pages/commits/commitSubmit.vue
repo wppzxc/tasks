@@ -53,10 +53,10 @@
                         console.log(resp.data);
                         that.$router.push("/taskInfo")
                     }).catch((err)=>{
-                        that.$toast(err)
+                        console.log(err)
                     })
                 }).catch((err)=>{
-                    that.$toast(err)
+                    console.log(err)
                 })
             },
             goBack: function () {

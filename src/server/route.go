@@ -39,5 +39,6 @@ func registerRoute(e *echo.Echo) {
 	e.GET("/:username/commits", handler.GetCommits)
 	e.GET("/:username/:taskID/commits", handler.GetCurrentCommit)
 	e.POST("/:username/:taskID/commits", handler.CreateCommits)
+	// /:username/:taskID/commits?resolve=已通过 admin only
 	e.PUT("/:username/:taskID/commits", handler.UpdateCommits)
 }

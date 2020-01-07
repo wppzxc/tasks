@@ -61,10 +61,9 @@
                     url = url + "?state=" + state
                 }
                 that.$axios.get(url).then((resp) => {
-                    console.log(resp.data);
-                    that.commits = resp.data
+                    that.commits = resp.data;
                 }).catch((err) => {
-                    that.$toast(err)
+                    console.log(err)
                 })
             },
             onConfirm: function (val, index) {
@@ -72,6 +71,7 @@
                 this.showFilter = false
             },
             showCommitInfo: function (commit) {
+                console.log(commit);
                 this.$router.push({
                     name: 'commitInfo',
                     params: {

@@ -5,7 +5,7 @@
                 left-text="返回"
                 left-arrow
                 @click-left="goBack">
-            <van-icon name="edit" slot="right" v-on:click="showUpdateService"/>
+            <van-icon v-if="checkAdmin" name="edit" slot="right" v-on:click="showUpdateService"/>
         </van-nav-bar>
         <van-row>
             <van-col span="24">
@@ -27,6 +27,8 @@
 <script>
     import {BACK_HOST, SERVICE_INFO} from "../../js/const/const";
     import {mapState} from 'vuex'
+    import {ADMIN} from "../../js/const/admin";
+
     export default {
         data() {
             return {
@@ -40,14 +42,17 @@
         computed: {
             ...mapState({
                 user: state => state.user
-            })
+            }),
+            checkAdmin: function () {
+                return this.user.name === ADMIN
+            }
         },
         mounted() {
             let that = this;
             that.$axios.get(BACK_HOST + that.user.name + SERVICE_INFO).then((resp)=>{
                 that.serviceInfo = resp.data
             }).catch((err)=>{
-                that.$toast(err)
+                console.log(err)
             })
         },
         methods: {

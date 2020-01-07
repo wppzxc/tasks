@@ -106,7 +106,7 @@
             },
             initTasks: function () {
                 let that = this;
-                that.$axios.get(BACK_HOST + that.user.name + TASKS).then(function (resp) {
+                that.$axios.get(BACK_HOST + that.user.name + TASKS).then((resp)=>{
                     console.log(resp.data);
                     let tmp = JSON.parse(resp.data.guideImages);
                     for (let i=0; i < tmp.length; i++) {
@@ -148,9 +148,9 @@
                     }
                     that.tmpSteps = JSON.parse(resp.data.steps);
                     that.taskInfo = resp.data
-                }).catch(function (err) {
+                }).catch((err)=>{
                     console.log(err);
-                    that.$toast(err)
+                    console.log(err)
                 })
             },
             saveTaskInfo: function () {
@@ -179,10 +179,10 @@
                         that.goBack()
                     }).catch((err)=>{
                         console.log(err);
-                        that.$toast(err)
+                        console.log(err)
                     })
                 }).catch((err)=>{
-                    that.$toast(err)
+                    console.log(err)
                 });
             },
             dataURLtoFile: function(dataurl, filename) {//将base64转换为文件

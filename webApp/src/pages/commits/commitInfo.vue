@@ -7,9 +7,7 @@
                 @click-left="goBack"/>
         <van-row>
             <van-col span="22" offset="1">
-                <van-panel :title="commit.title" :desc="commit.description" :status="commit.status">
-                    <div v-text="commit.longContent"></div>
-                </van-panel>
+                <van-panel :title="commit.taskTitle" :desc="commit.username" :status="commit.status"/>
             </van-col>
         </van-row>
         <van-row>
@@ -29,7 +27,7 @@
                        autosize
                        v-model="commit.commentKey"/>
         </van-row>
-        <van-row>
+        <van-row v-if="checkAdmin">
             <van-col offset="1" span="10">
                 <van-button type="primary" :disabled="!hasStarted(commit.status)" round size="large"
                             @click="passCommit">通过
@@ -48,6 +46,8 @@
     import {BACK_HOST, COMMITS} from '../../js/const/const'
     import {commitStatus} from "../../js/const/status";
     import {mapState} from 'vuex'
+    import {ADMIN} from "../../js/const/admin";
+
     export default {
         data() {
             return {
@@ -57,7 +57,10 @@
         computed: {
             ...mapState({
                 user: state => state.user
-            })
+            }),
+            checkAdmin: function () {
+                return this.user.name === ADMIN
+            }
         },
         mounted() {
             this.commit = this.$route.params.commit
@@ -91,7 +94,7 @@
                     console.log(resp.data);
                     that.goBack()
                 }).catch((err)=>{
-                    that.$toast(err)
+                    console.log(err)
                 })
             }
         }

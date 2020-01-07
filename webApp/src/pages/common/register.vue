@@ -22,13 +22,13 @@
                 let that = this;
                 let username = new Date().getTime();
                 let url = USERS + username + "?parent=" + parent;
-                that.$axios.post(url).then(function (resp) {
+                that.$axios.post(url).then((resp)=>{
                     console.log(resp);
                     let user = resp.data;
                     that.loginFunc(user);
                     localStorage.setItem("username", user.name);
                     that.$router.push("/")
-                }).catch(function (err) {
+                }).catch((err)=>{
                     console.log(err);
                     that.$toast("注册失败：" + err)
                 })

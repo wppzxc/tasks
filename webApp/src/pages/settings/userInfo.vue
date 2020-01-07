@@ -69,7 +69,7 @@
                     return that.$toast("密码为空或两次密码不一致!");
                 }
                 let url = USERS + that.user.name + "/" + that.updateInfo.oldPassword;
-                that.$axios.get(url).then(function (resp) {
+                that.$axios.get(url).then((resp)=>{
                     let newUserInfo = {
                         name: that.user.name,
                         password: that.updateInfo.newPassword,
@@ -84,7 +84,7 @@
                     that.$axios.put(putUrl,
                         JSON.stringify(newUserInfo),
                         {headers: {'Content-Type': 'application/json'}}
-                        ).then(function (resp) {
+                        ).then((resp)=>{
                         that.loginFunc(resp.data);
                         that.showPasswordInput = false;
                         that.updateInfo = {
@@ -93,11 +93,11 @@
                             checkPassword: "",
                             newAlipayAccount: ""
                         }
-                    }).catch(function (err) {
-                        that.$toast(err)
+                    }).catch((err)=>{
+                        console.log(err)
                     })
-                }).catch(function (err) {
-                    that.$toast(err)
+                }).catch((err)=>{
+                    console.log(err)
                 })
             }
         }

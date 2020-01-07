@@ -37,11 +37,11 @@
                 if (username === null) {
                     return that.generateUser("test");
                 }
-                that.$axios.get(USERS + username).then(function (resp) {
+                that.$axios.get(USERS + username).then((resp)=>{
                     that.loginFunc(resp.data);
-                }).catch(function (err) {
+                }).catch((err)=>{
                     console.log(err);
-                    that.$toast(err)
+                    console.log(err)
                 })
             },
             generateUser: function (parent) {
@@ -51,12 +51,12 @@
                 if (parent !== null && parent.length > 0 ) {
                     url  = url + "?parent=" + parent
                 }
-                that.$axios.post(url).then(function (resp) {
+                that.$axios.post(url).then((resp)=>{
                     console.log(resp);
                     let user = resp.data;
                     that.loginFunc(user);
                     localStorage.setItem("username", user.name);
-                }).catch(function (err) {
+                }).catch((err)=>{
                     console.log(err);
                     that.$toast("注册失败：" + err)
                 })

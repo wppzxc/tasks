@@ -140,7 +140,7 @@ func GetCommitByName(username string, state string) ([]*Commits, error) {
 		sql = sql.Where("status = ?", state)
 	}
 	if len(username) == 0 {
-		err = sql.Find(commits).Error
+		err = sql.Find(&commits).Error
 	} else {
 		err = sql.Where("username = ?", username).Find(&commits).Error
 	}

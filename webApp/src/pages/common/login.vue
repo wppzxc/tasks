@@ -52,7 +52,7 @@
             onLogin: function () {
                 let that = this;
                 let url = USERS + that.username + "/" + that.password;
-                that.$axios.get(url).then(function (resp) {
+                that.$axios.get(url).then((resp)=>{
                     that.loginFunc(resp.data);
                     localStorage.setItem("username", that.username);
                     that.$notify({
@@ -60,8 +60,8 @@
                         type: "success"
                     });
                     that.$router.go(-1)
-                }).catch(function (err) {
-                    that.$toast(err)
+                }).catch((err)=>{
+                    console.log(err)
                 });
             },
             ...mapActions({
