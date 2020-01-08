@@ -96,10 +96,15 @@ func UpdateCommits(ctx echo.Context) error {
 	if err := ctx.Bind(commit); err != nil {
 		return ctx.JSON(errors.NewTaskServerError(http.StatusInternalServerError, err))
 	}
+	cmt, err := service.GetCommitByID(commit.ID)
+	if err != nil {
+		return ctx.JSON(errors.NewTaskServerError(http.StatusInternalServerError, err))
+	}
+	commit.Username = cmt.Username
 	resolve := ctx.QueryParam("resolve")
 	if resolve == commitStatusDone {
 		if username == types.AdminUser {
-			if err := service.AddBonus(taskID, username); err != nil {
+			if err := service.AddBonus(taskID, commit.Username); err != nil {
 				fmt.Println(err)
 			}
 		} else {

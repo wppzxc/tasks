@@ -24,10 +24,11 @@
                     required
             />
         </van-cell-group>
-        <van-cell-group title=" ">
-            <van-button type="primary" round size="large" v-on:click="onLogin">登录</van-button>
-            <br/><br/>
-        </van-cell-group>
+        <van-row>
+            <van-col offset="2" span="20">
+                <van-button type="primary" round size="large" v-on:click="onLogin">登录</van-button>
+            </van-col>
+        </van-row>
     </div>
 </template>
 

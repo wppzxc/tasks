@@ -38,6 +38,12 @@
         methods: {
             onUpload: function () {
                 let that = this;
+                if (that.imgData.length === 0) {
+                    return that.$notify({
+                        message: "请选择图片！",
+                        type: "warning",
+                    });
+                }
                 let formdata = new FormData();
                 formdata.append("img0", that.imgData[0].file);
                 that.$axios.post(BACK_HOST + that.user.name + UPLOAD_IMAGES, formdata, {headers: {'Content-Type': 'multipart/form-data'}}).then((resp)=>{
@@ -51,7 +57,11 @@
                     };
                     that.$axios.put(BACK_HOST + that.user.name + "/" + commit.taskID + COMMITS, JSON.stringify(commit), {headers: {'Content-Type': 'application/json'}}).then((resp)=>{
                         console.log(resp.data);
-                        that.$router.push("/taskInfo")
+                        that.$notify({
+                            message: "已提交，等待审核",
+                            type: "success",
+                        });
+                        that.$router.push("/taskInfo");
                     }).catch((err)=>{
                         console.log(err)
                     })

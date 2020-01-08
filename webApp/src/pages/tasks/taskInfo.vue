@@ -46,7 +46,7 @@
                 </van-col>
                 <van-col offset="2" span="10">
                     <van-button type="primary" :disabled="!hasStarted(currentCommit.status)" round size="large"
-                                @click="goSubmitCommit">提交
+                                @click="goSubmitCommit">完成
                     </van-button>
                 </van-col>
             </van-row>
@@ -118,10 +118,20 @@
             },
             startTask: function () {
                 let that = this;
+                if (!that.user.registered) {
+                    return that.$notify({
+                        message: "请先绑定支付宝！",
+                        type: "warning",
+                    });
+                }
                 let username = localStorage.getItem("username");
                 that.$axios.post(BACK_HOST + username + "/" + that.taskInfo.ID + COMMITS).then((resp) => {
                     console.log(resp.data);
-                    that.currentCommit = resp.data
+                    that.currentCommit = resp.data;
+                    that.$notify({
+                        message: "已开始，等待完成",
+                        type: "success",
+                    });
                 }).catch((err) => {
                     console.log(err)
                 })

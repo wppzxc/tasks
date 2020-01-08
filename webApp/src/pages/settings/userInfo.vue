@@ -52,21 +52,16 @@
             ...mapActions({
                 loginFunc: 'loginFunc'
             }),
-            changeAlipayAccount: function () {
-                if (this.checkPassword.length < 6) {
-                    this.$toast("密码错误!")
-                } else {
-                    this.$toast("修改成功")
-                }
-                this.showPasswordInput = false;
-            },
             goBack: function () {
                 this.$router.go(-1)
             },
             update: function () {
                 let that = this;
                 if (that.updateInfo.oldPassword.length === 0 || that.updateInfo.newPassword !== that.updateInfo.checkPassword) {
-                    return that.$toast("密码为空或两次密码不一致!");
+                    return that.$notify({
+                        message: "密码为空或两次密码不一致!",
+                        type: "warning",
+                    });
                 }
                 let url = USERS + that.user.name + "/" + that.updateInfo.oldPassword;
                 that.$axios.get(url).then((resp)=>{
@@ -76,8 +71,6 @@
                         alipayAccount: that.updateInfo.newAlipayAccount,
                     };
                     let putUrl = USERS + that.user.name;
-                    console.log(that.user.registered);
-                    console.log(!that.user.registered);
                     if (!that.user.registered) {
                         putUrl = putUrl + "?register=true"
                     }
@@ -92,7 +85,11 @@
                             newPassword: "",
                             checkPassword: "",
                             newAlipayAccount: ""
-                        }
+                        };
+                        that.$notify({
+                            message: "修改成功",
+                            type: "success",
+                        });
                     }).catch((err)=>{
                         console.log(err)
                     })

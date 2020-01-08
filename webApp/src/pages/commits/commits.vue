@@ -37,6 +37,7 @@
                 finished: false,
                 showFilter: false,
                 commitStatus: ["全部", "进行中", "已提交", "已通过", "被拒绝"],
+                filterVal: "全部",
                 commits: []
             }
         },
@@ -54,8 +55,9 @@
                 that.getData();
                 that.isLoading = false
             },
-            getData: function (state) {
+            getData: function () {
                 let that = this;
+                let state = that.filterVal;
                 let url = BACK_HOST + that.user.name + COMMITS;
                 if ( state !== undefined && state !== "全部") {
                     url = url + "?state=" + state
@@ -67,7 +69,8 @@
                 })
             },
             onConfirm: function (val, index) {
-                this.getData(val);
+                this.filterVal = val;
+                this.getData();
                 this.showFilter = false
             },
             showCommitInfo: function (commit) {

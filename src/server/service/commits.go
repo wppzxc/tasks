@@ -3,7 +3,17 @@ package service
 import (
 	"fmt"
 	"github.com/wppzxc/tasks/src/database"
+	"strconv"
 )
+
+func GetCommitByID(id uint) (*database.Commits, error) {
+	cmtID := strconv.Itoa(int(id))
+	commit, err := database.GetCommitByID(cmtID)
+	if err != nil {
+		return nil, err
+	}
+	return commit, nil
+}
 
 func GetCommitsByName(username string, state string) ([]*database.Commits, error) {
 	commits, err := database.GetCommitByName(username, state)
