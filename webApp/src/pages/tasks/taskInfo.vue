@@ -4,7 +4,7 @@
             <van-icon v-if="checkAdmin" name="edit" slot="right" v-on:click="showEditTask"/>
         </van-nav-bar>
         <van-panel :title="taskInfo.title" :desc="taskInfo.expire | transTime" :status="taskInfo.status">
-            <van-cell title="任务赏金：￥" :value="taskInfo.bonus | transMoney"/>
+            <van-cell title="任务佣金：￥" :value="taskInfo.bonus | transMoney"/>
             <div>
                 <van-cell title="任务须知"/>
                 <van-field
